@@ -1,0 +1,10 @@
+import type { Request, Response } from "express";
+import catchAsync from "../../shared/catchAsync.js";
+
+const createPatient = catchAsync(async (req: Request, res: Response) => {
+  console.log("Patient: ", req.body);
+});
+
+export const UserController = {
+  createPatient,
+};
