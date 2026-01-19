@@ -1,6 +1,7 @@
 import { Server } from "http";
 import app from "./app.js";
 import config from "./config/index.js";
+import "dotenv/config";
 
 async function bootstrap() {
   // This variable will hold our server instance
