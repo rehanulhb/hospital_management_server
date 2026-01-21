@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync.js";
 import { UserService } from "./user.service.js";
 import sendResponse from "../../shared/sendResponse.js";
+import pick from "../../helper/pick.js";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.createPatient(req);
@@ -15,6 +16,10 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+  //page, limit, sortBy, sortOrder, - Pagination, sorting
+  //fields: searchTerm - searching, filtering
+
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
   const { page, limit, searchTerm, sortBy, sortOrder, role, status } =
     req.query;
   const result = await UserService.getAllFromDB({
