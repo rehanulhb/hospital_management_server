@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import type { Request } from "express";
 import { fileUploaded } from "../../helper/fileUploader.js";
+import { paginationHelper } from "../../helper/paginationHelper.js";
 
 const createPatient = async (req: Request) => {
   if (req.file) {
@@ -25,26 +26,10 @@ const createPatient = async (req: Request) => {
   return result;
 };
 
-const getAllFromDB = async ({
-  page,
-  limit,
-  searchTerm,
-  sortBy,
-  sortOrder,
-  role,
-  status,
-}: {
-  page: number;
-  limit: number;
-  searchTerm?: any;
-  sortBy: any;
-  sortOrder: any;
-  role: any;
-  status: any;
-}) => {
-  const pageNumber = page || 1;
-  const limitNumber = limit || 10;
-  const skip = (pageNumber - 1) * limitNumber;
+const getAllFromDB = async (params: any, options: any) => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelper.calculatePagination(options);
+
   const result = prisma.user.findMany({
     skip,
     take: limitNumber,
