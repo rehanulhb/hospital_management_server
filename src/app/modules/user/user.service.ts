@@ -3,6 +3,8 @@ import { prisma } from "../../shared/prisma.js";
 import type { Request } from "express";
 import { fileUploaded } from "../../helper/fileUploader.js";
 import { paginationHelper } from "../../helper/paginationHelper.js";
+import type { Prisma } from "@prisma/client";
+import { userSearchableFields } from "./user.constant.js";
 
 const createPatient = async (req: Request) => {
   if (req.file) {
@@ -29,27 +31,43 @@ const createPatient = async (req: Request) => {
 const getAllFromDB = async (params: any, options: any) => {
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const adnConditions: Prisma.UserWhereInput[] = [];
+
+  if (searchTerm) {
+    adnConditions.push({
+      OR: userSearchableFields.map((field) => ({
+        [field]: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    adnConditions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+
+  console.log(adnConditions);
 
   const result = prisma.user.findMany({
     skip,
-    take: limitNumber,
+    take: limit,
 
     where: {
-      email: {
-        contains: searchTerm,
-        mode: "insensitive",
-      },
-      role: role,
-      status: status,
+      AND: adnConditions,
     },
-    orderBy:
-      sortBy && sortOrder
-        ? {
-            [sortBy]: sortOrder,
-          }
-        : {
-            createdAt: "asc",
-          },
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
   });
   return result;
 };
