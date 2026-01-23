@@ -2,8 +2,9 @@ import { UserStatus } from "@prisma/client";
 import { prisma } from "../../shared/prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { jwtHelpers } from "../../helper/jwtHelper.js";
+
 import config from "../../../config/index.js";
+import { jwtHelper } from "../../helper/jwtHelper.js";
 
 const login = async (payload: { email: string; password: string }) => {
   const user = await prisma.user.findUniqueOrThrow({
@@ -21,7 +22,7 @@ const login = async (payload: { email: string; password: string }) => {
     throw new Error("Password is incorrect!");
   }
 
-  const accessToken = jwtHelpers.generateToken(
+  const accessToken = jwtHelper.generateToken(
     {
       email: user.email,
       role: user.role,
@@ -30,7 +31,7 @@ const login = async (payload: { email: string; password: string }) => {
     config.jwt_access_expires_in as string,
   );
 
-  const refreshToken = jwtHelpers.generateToken(
+  const refreshToken = jwtHelper.generateToken(
     {
       email: user.email,
       role: user.role,
