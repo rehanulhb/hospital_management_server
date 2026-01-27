@@ -5,6 +5,7 @@ import {
   type IOptions,
 } from "../../helper/paginationHelper.js";
 import type { Prisma } from "@prisma/client";
+import type { IJWTPayload } from "../../types/common.js";
 
 const insertIntoDB = async (payload: any) => {
   const { startTime, endTime, startDate, endDate } = payload;
@@ -68,7 +69,11 @@ const insertIntoDB = async (payload: any) => {
   return schedules;
 };
 
-const schedulesForDoctor = async (filters: any, options: IOptions) => {
+const schedulesForDoctor = async (
+  user: IJWTPayload,
+  filters: any,
+  options: IOptions,
+) => {
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelper.calculatePagination(options);
   const { startDateTime: filterStratDateTime, endDateTime: filterEndDateTime } =
@@ -100,8 +105,28 @@ const schedulesForDoctor = async (filters: any, options: IOptions) => {
         }
       : {};
 
+  const doctorSchedules = await prisma.doctorSchedules.findMany({
+    where: {
+      doctor: {
+        email: user.email,
+      },
+    },
+    select: {
+      scheduleId: true,
+    },
+  });
+
+  const doctorScheduleIds = doctorSchedules.map(
+    (schedule) => schedule.scheduleId,
+  );
+
   const result = await prisma.schedule.findMany({
-    where: whereConditions,
+    where: {
+      ...whereConditions,
+      id: {
+        notIn: doctorScheduleIds,
+      },
+    },
     skip,
     take: limit,
     orderBy: {
@@ -110,7 +135,12 @@ const schedulesForDoctor = async (filters: any, options: IOptions) => {
   });
 
   const total = await prisma.schedule.count({
-    where: whereConditions,
+    where: {
+      ...whereConditions,
+      id: {
+        notIn: doctorScheduleIds,
+      },
+    },
   });
 
   return {
