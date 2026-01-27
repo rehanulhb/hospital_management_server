@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 
 import config from "../../../config/index.js";
 import { jwtHelper } from "../../helper/jwtHelper.js";
+import ApiError from "../../errors/apiError.js";
+import httpStatus from "http-status";
 
 const login = async (payload: { email: string; password: string }) => {
   const user = await prisma.user.findUniqueOrThrow({
@@ -19,7 +21,7 @@ const login = async (payload: { email: string; password: string }) => {
     user.password,
   );
   if (!isCorrectPassword) {
-    throw new Error("Password is incorrect!");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Password is incorrect!");
   }
 
   const accessToken = jwtHelper.generateToken(
