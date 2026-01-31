@@ -1,10 +1,11 @@
-import type { Prisma } from "@prisma/client";
+import type { Doctor, Prisma } from "@prisma/client";
 import {
   paginationHelper,
   type IOptions,
 } from "../../helper/paginationHelper.js";
 import { doctorSearchableFields } from "./doctor.constant.js";
 import { prisma } from "../../shared/prisma.js";
+import type { IDoctorUpdateInput } from "./doctor.interface.js";
 
 const getAllFromDB = async (filters: any, options: IOptions) => {
   const { page, limit, skip, sortBy, sortOrder } =
@@ -60,6 +61,32 @@ const getAllFromDB = async (filters: any, options: IOptions) => {
   };
 };
 
+const updateIntoDB = async (
+  id: string,
+  payload: Partial<IDoctorUpdateInput>,
+) => {
+  const doctorInfo = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  const { specialties, ...doctorData } = payload;
+
+  if (specialties && specialties.length > 0) {
+  }
+
+  const updatedData = await prisma.doctor.update({
+    where: {
+      id: doctorInfo.id,
+    },
+    data: doctorData,
+  });
+
+  return updatedData;
+};
+
 export const DoctorService = {
   getAllFromDB,
+  updateIntoDB,
 };
