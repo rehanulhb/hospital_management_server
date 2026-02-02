@@ -16,4 +16,8 @@ router.patch(
   DoctorController.updateIntoDB,
 );
 
+router.delete("/:id", auth(UserRole.ADMIN), DoctorController.deleteFromDB);
+
+router.delete("/soft/:id", auth(UserRole.ADMIN), DoctorController.softDelete);
+
 export const DoctorRoutes = router;

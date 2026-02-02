@@ -1,4 +1,4 @@
-import type { Doctor, Prisma } from "@prisma/client";
+import { UserStatus, type Doctor, type Prisma } from "@prisma/client";
 import {
   paginationHelper,
   type IOptions,
@@ -149,7 +149,69 @@ const updateIntoDB = async (
   });
 };
 
-const getAISuggestion = async (payload: { symptoms: string }) => {
+const getByIdFromDB = async (id: string): Promise<Doctor | null> => {
+  const result = await prisma.doctor.findUnique({
+    where: {
+      id,
+      isDeleted: false,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialities: true,
+        },
+      },
+      doctorSchedules: {
+        include: {
+          schedule: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
+const deleteFromDB = async (id: string): Promise<Doctor> => {
+  return await prisma.$transaction(async (transactionClient) => {
+    const deleteDoctor = await transactionClient.doctor.delete({
+      where: {
+        id,
+      },
+    });
+
+    await transactionClient.user.delete({
+      where: {
+        email: deleteDoctor.email,
+      },
+    });
+
+    return deleteDoctor;
+  });
+};
+
+const softDelete = async (id: string): Promise<Doctor> => {
+  return await prisma.$transaction(async (transactionClient) => {
+    const deleteDoctor = await transactionClient.doctor.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    await transactionClient.user.update({
+      where: {
+        email: deleteDoctor.email,
+      },
+      data: {
+        status: UserStatus.DELETED,
+      },
+    });
+
+    return deleteDoctor;
+  });
+};
+
+const getAISuggestions = async (payload: { symptoms: string }) => {
   if (!(payload && payload.symptoms)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Symptom is Required");
   }
@@ -199,7 +261,7 @@ Return your response in JSON format with full individual doctor data.
     ],
   });
 
-  const result = await extractJsonFromMessage(completion.choices[0].message);
+  const result = await extractJsonFromMessage(completion.choices[0]?.message);
   return result;
   // console.log(completion.choices[0].message);
 };
@@ -207,5 +269,8 @@ Return your response in JSON format with full individual doctor data.
 export const DoctorService = {
   getAllFromDB,
   updateIntoDB,
-  getAISuggestion,
+  getByIdFromDB,
+  deleteFromDB,
+  softDelete,
+  getAISuggestions,
 };
