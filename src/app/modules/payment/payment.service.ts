@@ -9,13 +9,7 @@ const handleStripeWebhookEvent = async (event: Stripe.Event) => {
       const session = event.data.object as any;
 
       const appointmentId = session.metadata?.appointmentId;
-      const paymentIntentId = session.payment_intent;
-      const email = session.customer_email;
-
-      console.log("Payment Successful");
-      console.log("Appointment ID:", appointmentId);
-      console.log("Payment Intent:", paymentIntentId);
-      console.log("Customer Email:", email);
+      const paymentId = session.metadata?.paymentId;
 
       await prisma.appointment.update({
         where: {
