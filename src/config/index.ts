@@ -18,4 +18,5 @@ export default {
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
   open_router_api_key: process.env.OPENROUTER_API_KEY,
   stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  webhook_secret: process.env.WEBHOOK_SECRET,
 };
