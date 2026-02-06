@@ -11,8 +11,16 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler.js";
 import router from "./app/routes/index.js";
 
 import cookieParser from "cookie-parser";
+import { PaymentController } from "./app/modules/payment/payment.controller.js";
 
 const app: Application = express();
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  PaymentController.handleStripeWebhookEvent,
+);
+
 app.use(
   cors({
     origin: "http://localhost:3000",
