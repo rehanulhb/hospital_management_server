@@ -2,5 +2,5 @@ import type { UserRole } from "@prisma/client";
 
 export type IJWTPayload = {
   email: string;
-  rolw: UserRole;
+  role: UserRole;
 };

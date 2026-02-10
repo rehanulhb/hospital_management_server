@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get(
   "/my-appointments",
-  auth(UserRole.PATIENT),
+  auth(UserRole.PATIENT, UserRole.DOCTOR),
   AppointmentController.getMyAppointment,
 );
 

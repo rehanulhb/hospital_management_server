@@ -3,6 +3,7 @@ import sendResponse from "../../shared/sendResponse.js";
 import { AppointmentService } from "./appointment.service.js";
 import catchAsync from "../../shared/catchAsync.js";
 import type { Request, Response } from "express";
+import pick from "../../helper/pick.js";
 
 const createAppointment = catchAsync(
   async (req: Request & { user?: IJWTPayload }, res: Response) => {
