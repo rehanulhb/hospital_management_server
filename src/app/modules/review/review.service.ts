@@ -1,5 +1,4 @@
 import { hasAutoParseableInput } from "openai/lib/parser";
-
 import httpStatus from "http-status";
 import ApiError from "../../errors/apiError.js";
 import type { IJWTPayload } from "../../types/common.js";
