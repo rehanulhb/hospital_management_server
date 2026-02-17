@@ -19,6 +19,11 @@ export default {
   open_router_api_key: process.env.OPENROUTER_API_KEY,
   stripe_secret_key: process.env.STRIPE_SECRET_KEY,
   webhook_secret: process.env.WEBHOOK_SECRET,
+  reset_password_secret: process.env.RESET_PASSWORD_SECRET,
+  reset_password_expires_in: process.env.RESET_PASS_TOKEN_EXPIRES_IN,
+  reset_pass_link: process.env.RESET_PASS_LINK,
+  email_sender: process.env.EMAIL_SENDER,
+  app_password: process.env.APP_PASSWORD,
 
   salt_round: process.env.SALT_ROUND,
 };

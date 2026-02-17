@@ -5,6 +5,7 @@ import config from "../../../config/index.js";
 import { jwtHelper } from "../../helper/jwtHelper.js";
 import ApiError from "../../errors/apiError.js";
 import httpStatus from "http-status";
+import emailSender from "./emailSender.js";
 // import { Secret } from "jsonwebtoken";
 
 const login = async (payload: { email: string; password: string }) => {
@@ -128,8 +129,8 @@ const forgotPassword = async (payload: { email: string }) => {
 
   const resetPassToken = jwtHelper.generateToken(
     { email: userData.email, role: userData.role },
-    config.jwt.reset_pass_secret as Secret,
-    config.jwt.reset_pass_token_expires_in as string,
+    config.reset_password_secret as string,
+    config.reset_password_expires_in as string,
   );
 
   const resetPassLink =
@@ -166,7 +167,7 @@ const resetPassword = async (
 
   const isValidToken = jwtHelper.verifyToken(
     token,
-    config.jwt.reset_pass_secret as Secret,
+    config.reset_password_secret as string,
   );
 
   if (!isValidToken) {

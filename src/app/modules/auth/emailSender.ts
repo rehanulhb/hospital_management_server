@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import config from "../../../config";
+import config from "../../../config/index.js";
 
 const emailSender = async (email: string, html: string) => {
   const transporter = nodemailer.createTransport({
@@ -7,8 +7,8 @@ const emailSender = async (email: string, html: string) => {
     port: 587,
     secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
-      user: config.emailSender.email,
-      pass: config.emailSender.app_pass, // app password
+      user: config.email_sender,
+      pass: config.app_password, // app password
     },
     tls: {
       rejectUnauthorized: false,
@@ -16,7 +16,7 @@ const emailSender = async (email: string, html: string) => {
   });
 
   const info = await transporter.sendMail({
-    from: '"PH Health Care" <shafayat.ph@gmail.com>', // sender address
+    from: '"PH Health Care" <onlinestaff7@gmail.com>', // sender address
     to: email, // list of receivers
     subject: "Reset Password Link", // Subject line
     //text: "Hello world?", // plain text body
