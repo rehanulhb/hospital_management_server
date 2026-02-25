@@ -1,21 +1,21 @@
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, {
   type Application,
+  type NextFunction,
   type Request,
   type Response,
 } from "express";
-import cors from "cors";
+import httpStatus from "http-status";
+import cron from "node-cron";
 
-import notFound from "./app/middlewares/notFound.js";
-import config from "./config/index.js";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler.js";
+import { AppointmentService } from "./app/modules/appointment/appointment.service.js";
+import { PaymentController } from "./app/modules/payment/payment.controller.js";
 import router from "./app/routes/index.js";
 
-import cookieParser from "cookie-parser";
-import { PaymentController } from "./app/modules/payment/payment.controller.js";
-import cron from "node-cron";
-import { AppointmentService } from "./app/modules/appointment/appointment.service.js";
-
 const app: Application = express();
+app.use(cookieParser());
 
 app.post(
   "/webhook",
@@ -25,38 +25,46 @@ app.post(
 
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   }),
 );
 
 //parser
 app.use(express.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-cron.schedule("* * * * *", () => {
+cron.schedule("*/5 * * * *", () => {
   try {
-    console.log("Node cron called at ", new Date());
+    console.log(
+      "🔄 Running unpaid appointment cleanup at",
+      new Date().toISOString(),
+    );
     AppointmentService.cancelUnpaidAppointments();
   } catch (err) {
-    console.error(err);
+    console.error("❌ Cron job error:", err);
   }
+});
+
+app.get("/", (req: Request, res: Response) => {
+  res.send({
+    Message: "Ph health care server..",
+  });
 });
 
 app.use("/api/v1", router);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send({
-    message: "Server is Running",
-    environment: config.node_env,
-    uptime: process.uptime().toFixed(2) + " Sec",
-    timeStamp: new Date().toISOString(),
-  });
-});
-
 app.use(globalErrorHandler);
 
-app.use(notFound);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(httpStatus.NOT_FOUND).json({
+    success: false,
+    message: "API NOT FOUND!",
+    error: {
+      path: req.originalUrl,
+      message: "Your requested path is not found!",
+    },
+  });
+});
 
 export default app;

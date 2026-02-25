@@ -1,8 +1,10 @@
-import type { NextFunction, Request, Response } from "express";
-import { jwtHelper } from "../helper/jwtHelper.js";
-import config from "../../config/index.js";
-import ApiError from "../errors/apiError.js";
 import httpStatus from "http-status";
+
+import ApiError from "../errors/apiError.js";
+import { jwtHelpers } from "../helper/jwtHelper.js";
+import config from "../../config/index.js";
+import type { Secret } from "jsonwebtoken";
+import type { NextFunction, Request, Response } from "express";
 
 const auth = (...roles: string[]) => {
   return async (
@@ -11,23 +13,23 @@ const auth = (...roles: string[]) => {
     next: NextFunction,
   ) => {
     try {
-      const token = req.cookies.accessToken;
+      const token = req.headers.authorization || req.cookies.accessToken;
+      console.log({ token }, "from auth guard");
 
       if (!token) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");
       }
 
-      const verifyUser = jwtHelper.verifyToken(
+      const verifiedUser = jwtHelpers.verifyToken(
         token,
-        config.jwt_access_secret as string,
+        config.jwt_access_secret as Secret,
       );
 
-      req.user = verifyUser;
+      req.user = verifiedUser;
 
-      if (roles.length && !roles.includes(verifyUser.role)) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+      if (roles.length && !roles.includes(verifiedUser.role)) {
+        throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!");
       }
-
       next();
     } catch (err) {
       next(err);

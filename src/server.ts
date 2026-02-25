@@ -1,13 +1,17 @@
 import { Server } from "http";
-import app from "./app.js";
+
 import config from "./config/index.js";
-import "dotenv/config";
+import app from "./app.js";
+import seedSuperAdmin from "./app/helper/seed.js";
 
 async function bootstrap() {
   // This variable will hold our server instance
   let server: Server;
 
   try {
+    // Seed super admin
+    await seedSuperAdmin();
+
     // Start the server
     server = app.listen(config.port, () => {
       console.log(`🚀 Server is running on http://localhost:${config.port}`);

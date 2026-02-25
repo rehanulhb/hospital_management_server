@@ -1,11 +1,19 @@
 import express from "express";
-
 import { UserRole } from "@prisma/client";
-import auth from "../../middlewares/auth.js";
 import { ReviewController } from "./review.controller.js";
+import auth from "../../middlewares/auth.js";
+import validateRequest from "../../middlewares/validateRequest.js";
+import { ReviewValidation } from "./review.validation.js";
 
 const router = express.Router();
 
-router.post("/", auth(UserRole.PATIENT), ReviewController.insertIntoDB);
+router.get("/", ReviewController.getAllFromDB);
+
+router.post(
+  "/",
+  auth(UserRole.PATIENT),
+  validateRequest(ReviewValidation.create),
+  ReviewController.insertIntoDB,
+);
 
 export const ReviewRoutes = router;

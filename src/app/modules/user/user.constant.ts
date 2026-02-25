@@ -1,5 +1,8 @@
-export const userSearchableFields = ["email"];
+export const userSearchAbleFields: string[] = ["email"]; // only for search term
 
-export const UserFilterableFields = ["status", "role", "email", "searchTerm"];
-
-export const UserFilterableOptions = ["page", "limit", "sortBy", "sortOrder"];
+export const userFilterableFields: string[] = [
+  "email",
+  "role",
+  "status",
+  "searchTerm",
+]; // for all filtering

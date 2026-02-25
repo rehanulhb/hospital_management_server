@@ -1,34 +1,35 @@
-import catchAsync from "../../shared/catchAsync.js";
-import type { Request, Response } from "express";
-import sendResponse from "../../shared/sendResponse.js";
-import type { IJWTPayload } from "../../types/common.js";
-import { PrescriptionService } from "./prescription.service.js";
 import httpStatus from "http-status";
-import pick from "../../helper/pick.js";
 
-const createPrescription = catchAsync(
-  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+import type { Request, Response } from "express";
+import catchAsync from "../../shared/catchAsync.js";
+import sendResponse from "../../shared/sendResponse.js";
+import { PrescriptionService } from "./prescription.service.js";
+import type { IAuthUser } from "../../interfaces/common.js";
+import pick from "../../helper/pick.js";
+import { prescriptionFilterableFields } from "./prescription.constants.js";
+
+const insertIntoDB = catchAsync(
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
     const user = req.user;
-    const result = await PrescriptionService.createPrescription(
-      user as IJWTPayload,
+    const result = await PrescriptionService.insertIntoDB(
+      user as IAuthUser,
       req.body,
     );
-
     sendResponse(res, {
-      statusCode: 201,
+      statusCode: httpStatus.OK,
       success: true,
-      message: "prescription created successfully!",
+      message: "Prescription created successfully",
       data: result,
     });
   },
 );
 
 const patientPrescription = catchAsync(
-  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
     const user = req.user;
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await PrescriptionService.patientPrescription(
-      user as IJWTPayload,
+      user as IAuthUser,
       options,
     );
     sendResponse(res, {
@@ -41,7 +42,21 @@ const patientPrescription = catchAsync(
   },
 );
 
+const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, prescriptionFilterableFields);
+  const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+  const result = await PrescriptionService.getAllFromDB(filters, options);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Prescriptions retrieval successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 export const PrescriptionController = {
-  createPrescription,
+  insertIntoDB,
   patientPrescription,
+  getAllFromDB,
 };

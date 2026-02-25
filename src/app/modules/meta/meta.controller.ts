@@ -1,17 +1,15 @@
 import httpStatus from "http-status";
 
-import catchAsync from "../../shared/catchAsync.js";
 import type { Request, Response } from "express";
-import sendResponse from "../../shared/sendResponse.js";
-import type { IJWTPayload } from "../../types/common.js";
+import catchAsync from "../../shared/catchAsync.js";
 import { MetaService } from "./meta.service.js";
+import sendResponse from "../../shared/sendResponse.js";
+import type { IAuthUser } from "../../interfaces/common.js";
 
 const fetchDashboardMetaData = catchAsync(
-  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
     const user = req.user;
-    const result = await MetaService.fetchDashboardMetaData(
-      user as IJWTPayload,
-    );
+    const result = await MetaService.fetchDashboardMetaData(user as IAuthUser);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

@@ -1,11 +1,11 @@
 import httpStatus from "http-status";
+
+import type { Request, Response } from "express";
+import catchAsync from "../../shared/catchAsync.js";
 import sendResponse from "../../shared/sendResponse.js";
 import pick from "../../helper/pick.js";
-import { PatientService } from "./patient.service.js";
 import { patientFilterableFields } from "./patient.constant.js";
-import catchAsync from "../../shared/catchAsync.js";
-import type { Request, Response } from "express";
-import type { IJWTPayload } from "../../types/common.js";
+import { PatientService } from "./patient.service.js";
 
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, patientFilterableFields);
@@ -34,6 +34,29 @@ const getByIdFromDB = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await PatientService.updateIntoDB(id as string, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Patient updated successfully",
+    data: result,
+  });
+});
+
+const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await PatientService.deleteFromDB(id as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Patient deleted successfully",
+    data: result,
+  });
+});
+
 const softDelete = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await PatientService.softDelete(id as string);
@@ -45,25 +68,10 @@ const softDelete = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateIntoDB = catchAsync(
-  async (req: Request & { user?: IJWTPayload }, res: Response) => {
-    const user = req.user;
-    const result = await PatientService.updateIntoDB(
-      user as IJWTPayload,
-      req.body,
-    );
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Patient Updated successfully",
-      data: result,
-    });
-  },
-);
-
 export const PatientController = {
   getAllFromDB,
   getByIdFromDB,
-  softDelete,
   updateIntoDB,
+  deleteFromDB,
+  softDelete,
 };

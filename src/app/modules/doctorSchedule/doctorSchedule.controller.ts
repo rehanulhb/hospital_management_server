@@ -1,24 +1,60 @@
+import httpStatus from "http-status";
 import type { Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync.js";
 import sendResponse from "../../shared/sendResponse.js";
 import { DoctorScheduleService } from "./doctorSchedule.service.js";
-import type { IJWTPayload } from "../../types/common.js";
+import type { IAuthUser } from "../../interfaces/common.js";
 import pick from "../../helper/pick.js";
-import httpStatus from "http-status";
 import { scheduleFilterableFields } from "./doctorSchedule.constant.js";
 
 const insertIntoDB = catchAsync(
-  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
     const user = req.user;
-    const result = await DoctorScheduleService.insertIntoDB(
-      user as IJWTPayload,
-      req.body,
+    const result = await DoctorScheduleService.insertIntoDB(user, req.body);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Doctor Schedule created successfully!",
+      data: result,
+    });
+  },
+);
+
+const getMySchedule = catchAsync(
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const filters = pick(req.query, ["startDate", "endDate", "isBooked"]);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+
+    const user = req.user;
+    const result = await DoctorScheduleService.getMySchedule(
+      filters,
+      options,
+      user as IAuthUser,
     );
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: httpStatus.OK,
       success: true,
-      message: "Doctor Schedule created Successfully",
+      message: "My Schedule fetched successfully!",
+      data: result,
+    });
+  },
+);
+
+const deleteFromDB = catchAsync(
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const user = req.user;
+    const { id } = req.params;
+    const result = await DoctorScheduleService.deleteFromDB(
+      user as IAuthUser,
+      id as string,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "My Schedule deleted successfully!",
       data: result,
     });
   },
@@ -39,5 +75,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 
 export const DoctorScheduleController = {
   insertIntoDB,
+  getMySchedule,
+  deleteFromDB,
   getAllFromDB,
 };

@@ -1,23 +1,40 @@
 import express from "express";
+import { UserRole } from "@prisma/client";
 import { DoctorController } from "./doctor.controller.js";
 import auth from "../../middlewares/auth.js";
-import { UserRole } from "@prisma/client";
+import validateRequest from "../../middlewares/validateRequest.js";
+import { DoctorValidation } from "./doctor.validation.js";
 
 const router = express.Router();
 
+// AI driven doctor suggestion
+router.post("/suggestion", DoctorController.getAiSuggestion);
+
+// task 3
 router.get("/", DoctorController.getAllFromDB);
 
-router.post("/suggestion", DoctorController.getAISuggestions);
+//task 4
 router.get("/:id", DoctorController.getByIdFromDB);
 
 router.patch(
   "/:id",
-  auth(UserRole.ADMIN, UserRole.DOCTOR),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
+  validateRequest(DoctorValidation.update),
   DoctorController.updateIntoDB,
 );
 
-router.delete("/:id", auth(UserRole.ADMIN), DoctorController.deleteFromDB);
+//task 5
+router.delete(
+  "/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  DoctorController.deleteFromDB,
+);
 
-router.delete("/soft/:id", auth(UserRole.ADMIN), DoctorController.softDelete);
+// task 6
+router.delete(
+  "/soft/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  DoctorController.softDelete,
+);
 
 export const DoctorRoutes = router;
