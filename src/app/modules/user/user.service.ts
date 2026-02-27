@@ -11,11 +11,10 @@ import type { Request } from "express";
 import config from "../../../config/index.js";
 import { fileUploader } from "../../helper/fileUploader.js";
 import { paginationHelper } from "../../helper/paginationHelper.js";
-
+import prisma from "../../shared/prisma.js";
 import type { IAuthUser } from "../../interfaces/common.js";
 import type { IPaginationOptions } from "../../interfaces/pagination.js";
 import { userSearchAbleFields } from "./user.constant.js";
-import prisma from "../../shared/prisma.js";
 
 const createAdmin = async (req: Request): Promise<Admin> => {
   const file = req.file;

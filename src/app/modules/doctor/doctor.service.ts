@@ -2,13 +2,13 @@ import { Prisma, UserStatus, type Doctor } from "@prisma/client";
 
 import { askOpenRouter } from "../../helper/open-router.js";
 import { paginationHelper } from "../../helper/paginationHelper.js";
+import prisma from "../../shared/prisma.js";
 import type { IPaginationOptions } from "../../interfaces/pagination.js";
 import { doctorSearchableFields } from "./doctor.constant.js";
 import type {
   IDoctorFilterRequest,
   IDoctorUpdate,
 } from "./doctor.interface.js";
-import prisma from "../../shared/prisma.js";
 
 const getAllFromDB = async (
   filters: IDoctorFilterRequest,
