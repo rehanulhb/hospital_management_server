@@ -1,6 +1,5 @@
+import { type Request, type Response } from "express";
 import httpStatus from "http-status";
-
-import type { Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync.js";
 import pick from "../../helper/pick.js";
 import sendResponse from "../../shared/sendResponse.js";

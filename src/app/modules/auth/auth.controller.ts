@@ -1,9 +1,10 @@
+import { type Request, type Response } from "express";
 import httpStatus from "http-status";
-import type { Request, Response } from "express";
-import config from "../../../config/index.js";
+
 import catchAsync from "../../shared/catchAsync.js";
-import sendResponse from "../../shared/sendResponse.js";
+import config from "../../../config/index.js";
 import { AuthServices } from "./auth.service.js";
+import sendResponse from "../../shared/sendResponse.js";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const accessTokenExpiresIn = config.jwt_access_expires_in as string;

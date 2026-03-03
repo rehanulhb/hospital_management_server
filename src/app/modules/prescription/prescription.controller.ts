@@ -1,12 +1,11 @@
+import { type Request, type Response } from "express";
 import httpStatus from "http-status";
-
-import type { Request, Response } from "express";
+import { prescriptionFilterableFields } from "./prescription.constants.js";
+import pick from "../../helper/pick.js";
+import type { IAuthUser } from "../../interfaces/common.js";
+import { PrescriptionService } from "./prescription.service.js";
 import catchAsync from "../../shared/catchAsync.js";
 import sendResponse from "../../shared/sendResponse.js";
-import { PrescriptionService } from "./prescription.service.js";
-import type { IAuthUser } from "../../interfaces/common.js";
-import pick from "../../helper/pick.js";
-import { prescriptionFilterableFields } from "./prescription.constants.js";
 
 const insertIntoDB = catchAsync(
   async (req: Request & { user?: IAuthUser }, res: Response) => {

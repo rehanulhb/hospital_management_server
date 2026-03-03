@@ -1,13 +1,12 @@
 import { UserStatus } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import httpStatus from "http-status";
-
+import emailSender from "./emailSender.js";
 import type { Secret } from "jsonwebtoken";
 import config from "../../../config/index.js";
 import { jwtHelpers } from "../../helper/jwtHelper.js";
-import ApiError from "../../errors/apiError.js";
-import emailSender from "./emailSender.js";
 import prisma from "../../shared/prisma.js";
+import ApiError from "../../errors/apiError.js";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
@@ -211,7 +210,7 @@ const forgotPassword = async (payload: { email: string }) => {
                             <tr>
                                 <td style="padding: 30px 40px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; text-align: center;">
                                     <p style="margin: 0 0 10px 0; color: #999999; font-size: 14px;">
-                                        © ${new Date().getFullYear()} PH Health Care. All rights reserved.
+                                        © ${new Date().getFullYear()} Hospital Management System. All rights reserved.
                                     </p>
                                     <p style="margin: 0; color: #999999; font-size: 12px;">
                                         This is an automated email. Please do not reply.
@@ -239,7 +238,7 @@ const resetPassword = async (
   if (token) {
     const decodedToken = jwtHelpers.verifyToken(
       token,
-      config.reset_password_secret as Secret,
+      config.jwt_access_secret as Secret,
     );
 
     if (!decodedToken) {

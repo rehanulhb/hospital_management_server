@@ -9,11 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 
 import { paginationHelper } from "../../helper/paginationHelper.js";
 import { stripe } from "../../helper/stripe.js";
-
+import prisma from "../../shared/prisma.js";
 import ApiError from "../../errors/apiError.js";
 import type { IAuthUser } from "../../interfaces/common.js";
 import type { IPaginationOptions } from "../../interfaces/pagination.js";
-import prisma from "../../shared/prisma.js";
 
 const createAppointment = async (user: IAuthUser, payload: any) => {
   const patientData = await prisma.patient.findUniqueOrThrow({

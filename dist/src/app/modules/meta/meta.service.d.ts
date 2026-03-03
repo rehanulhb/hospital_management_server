@@ -1,0 +1,53 @@
+import type { IAuthUser } from "../../interfaces/common.js";
+export declare const MetaService: {
+    fetchDashboardMetaData: (user: IAuthUser) => Promise<{
+        appointmentCount: number;
+        patientCount: number;
+        doctorCount: number;
+        paymentCount: number;
+        totalRevenue: import("@prisma/client").Prisma.GetPaymentAggregateType<{
+            _sum: {
+                amount: true;
+            };
+            where: {
+                status: "PAID";
+            };
+        }>;
+        barChartData: {
+            month: Date;
+            count: bigint;
+        }[];
+        pieCharData: {
+            status: import("@prisma/client").$Enums.AppointmentStatus;
+            count: number;
+        }[];
+    } | {
+        appointmentCount: number;
+        reviewCount: number;
+        patientCount: number;
+        totalRevenue: import("@prisma/client").Prisma.GetPaymentAggregateType<{
+            _sum: {
+                amount: true;
+            };
+            where: {
+                appointment: {
+                    doctorId: string;
+                };
+                status: "PAID";
+            };
+        }>;
+        formattedAppointmentStatusDistribution: {
+            status: import("@prisma/client").$Enums.AppointmentStatus;
+            count: number;
+        }[];
+    } | {
+        appointmentCount: number;
+        prescriptionCount: number;
+        reviewCount: number;
+        formattedAppointmentStatusDistribution: {
+            status: import("@prisma/client").$Enums.AppointmentStatus;
+            count: number;
+        }[];
+    }>;
+};
+//# sourceMappingURL=meta.service.d.ts.map

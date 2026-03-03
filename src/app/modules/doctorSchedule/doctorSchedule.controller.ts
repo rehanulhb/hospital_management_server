@@ -1,11 +1,12 @@
+import { type Request, type Response } from "express";
 import httpStatus from "http-status";
-import type { Request, Response } from "express";
-import catchAsync from "../../shared/catchAsync.js";
-import sendResponse from "../../shared/sendResponse.js";
-import { DoctorScheduleService } from "./doctorSchedule.service.js";
-import type { IAuthUser } from "../../interfaces/common.js";
-import pick from "../../helper/pick.js";
+
 import { scheduleFilterableFields } from "./doctorSchedule.constant.js";
+import pick from "../../helper/pick.js";
+import type { IAuthUser } from "../../interfaces/common.js";
+import { DoctorScheduleService } from "./doctorSchedule.service.js";
+import sendResponse from "../../shared/sendResponse.js";
+import catchAsync from "../../shared/catchAsync.js";
 
 const insertIntoDB = catchAsync(
   async (req: Request & { user?: IAuthUser }, res: Response) => {

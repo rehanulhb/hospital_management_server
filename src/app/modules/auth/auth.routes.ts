@@ -5,9 +5,9 @@ import express, {
   type Response,
 } from "express";
 
-import auth from "../../middlewares/auth.js";
-import { authLimiter } from "../../middlewares/rateLimiter.js";
 import { AuthController } from "./auth.controller.js";
+import { authLimiter } from "../../middlewares/rateLimiter.js";
+import auth from "../../middlewares/auth.js";
 
 const router = express.Router();
 

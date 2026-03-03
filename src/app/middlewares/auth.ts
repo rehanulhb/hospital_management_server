@@ -1,10 +1,10 @@
+import { type NextFunction, type Request, type Response } from "express";
 import httpStatus from "http-status";
 
 import ApiError from "../errors/apiError.js";
-import { jwtHelpers } from "../helper/jwtHelper.js";
-import config from "../../config/index.js";
 import type { Secret } from "jsonwebtoken";
-import type { NextFunction, Request, Response } from "express";
+import config from "../../config/index.js";
+import { jwtHelpers } from "../helper/jwtHelper.js";
 
 const auth = (...roles: string[]) => {
   return async (
